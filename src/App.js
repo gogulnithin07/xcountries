@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
+  const [countries, setCountries] = useState([]);
+  useEffect(function () {
+    async function getData() {
+      try {
+        let req = await fetch("https://restcountries.com/v3.1/all");
+        if (!req.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        let res = await req.json();
+        console.log(res);
+        setCountries(res);
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+    getData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ul className="container">
+        {countries.map((val) => (
+          <Country key={val.area} name={val.name.common} flag={val.flags.png} />
+        ))}
+      </ul>
     </div>
+  );
+}
+function Country({ name, flag }) {
+  return (
+    <li className="box">
+      <img src={flag} alt="flagimage" />
+      <p>{name}</p>
+    </li>
   );
 }
 
